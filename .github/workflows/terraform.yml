@@ -1,1 +1,65 @@
+name: Terraform CI/CD 
 
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  terraform:
+    name: Terraform Deploy
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./Root/envs/dev
+
+    steps:
+
+      # 1. Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configure AWS using OIDC
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/github-actions-terraform-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. Verify AWS connection
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      # 4. Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 5. Terraform Format
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      # 6. Terraform Initialize
+      - name: Terraform Init
+        run: terraform init
+
+      # 7. Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+      # 8. Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan
+
+      # 9. Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
