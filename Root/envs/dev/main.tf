@@ -22,10 +22,10 @@ vpc_id            = module.vpc.vpc_id
  allowed_ssh_cidr = ["0.0.0.0/0"]   
 }
 
-#resource "aws_key_pair" "login" {
-#  key_name   = "us-east-1"
-#  public_key = file("~/.ssh/id_ed25519.pub")
-#}
+resource "aws_key_pair" "login" {
+  key_name   = "us-east-1"
+  public_key = var.ec2_public_key
+}
 
 # ────────────────────────────
 # frontend ec2 instance public
@@ -35,8 +35,8 @@ source = "../../modules/frontend/ec2"
 aws_region = "us-east-1"
 ami = "ami-00ca32bbc84273381"
 instance_type = "t2.micro"
-key_name = "us-east-1"
-#key_name = aws_key_pair.login.key_name
+#key_name = "us-east-1"
+key_name = aws_key_pair.login.key_name
 subnet_id = module.vpc.public_subnets[0]
 security_group_id = module.vpc.bastion_sg_id
 
@@ -50,8 +50,8 @@ source = "../../modules/backend/ec2"
 aws_region = "us-east-1"
 ami = "ami-00ca32bbc84273381"
 instance_type = "t2.micro"
-key_name = "us-east-1"
-#key_name = aws_key_pair.login.key_name
+#key_name = "us-east-1"
+key_name = aws_key_pair.login.key_name
 subnet_id = module.vpc.public_subnets[0]
 security_group_id = module.vpc.bastion_sg_id
 
@@ -64,8 +64,8 @@ source = "../../modules/bastion"
 aws_region = "us-east-1"
 ami = "ami-00ca32bbc84273381"
 instance_type = "t2.micro"
-key_name = "us-east-1"
-#key_name = aws_key_pair.login.key_name
+#key_name = "us-east-1"
+key_name = aws_key_pair.login.key_name
 subnet_id = module.vpc.public_subnets[0]
 security_group_id = module.vpc.bastion_sg_id
 
