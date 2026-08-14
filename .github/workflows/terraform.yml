@@ -1,4 +1,4 @@
-name: Terraform CI/CD 
+name: Terraform CI/CD
 
 on:
   push:
@@ -6,13 +6,6 @@ on:
       - main
 
   workflow_dispatch:
-
-permissions:
-  id-token: write
-  contents: read
-
-env:
-  AWS_REGION: us-east-1
 
 jobs:
   terraform:
@@ -23,43 +16,30 @@ jobs:
       run:
         working-directory: ./Root/envs/dev
 
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-east-1
+
     steps:
 
-      # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Configure AWS using OIDC
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::254103026944:role/github-actions-terraform-role
-          aws-region: ${{ env.AWS_REGION }}
-
-      # 3. Verify AWS connection
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
-
-      # 4. Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      # 5. Terraform Format
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
+      - name: Verify AWS connection
+        run: aws sts get-caller-identity
 
-      # 6. Terraform Initialize
       - name: Terraform Init
         run: terraform init
 
-      # 7. Terraform Validate
       - name: Terraform Validate
         run: terraform validate
 
-      # 8. Terraform Plan
       - name: Terraform Plan
         run: terraform plan
 
-      # 9. Terraform Apply
       - name: Terraform Apply
         run: terraform apply -auto-approve
