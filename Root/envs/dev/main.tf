@@ -71,6 +71,7 @@ security_group_id = module.vpc.bastion_sg_id
 
 }
 
+
 # # ─────────────────────────────
 # # Frontend ALB
 # # ─────────────────────────────
