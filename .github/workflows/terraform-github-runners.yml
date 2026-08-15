@@ -1,1 +1,54 @@
+name: Terraform CI/CD
 
+on:
+  # push:
+  #   branches: [ main ]
+  workflow_dispatch:   # Manual trigger only
+
+jobs:
+  terraform:
+    name: Terraform Deploy
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        working-directory: ./Root/envs/dev
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-east-1
+
+      # EC2 SSH public key
+      TF_VAR_ec2_public_key: ${{ secrets.EC2_PUBLIC_KEY }}
+
+    steps:
+
+      # Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Verify AWS connection
+      - name: Verify AWS connection
+        run: aws sts get-caller-identity
+
+      # Terraform Init
+      - name: Terraform Init
+        run: terraform init
+
+      # Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan
+
+      # Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
