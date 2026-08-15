@@ -9,7 +9,7 @@ jobs:
   terraform:
     name: Terraform Deploy
     # runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux, x64, server-2]
 
     defaults:
       run:
@@ -52,3 +52,17 @@ jobs:
       # Terraform Apply
       - name: Terraform Apply
         run: terraform apply -auto-approve
+
+      
+  deploy-server-2:
+    name: Deploy to Server 2
+
+    runs-on: [self-hosted, linux, x64, server-2]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy
+        run: |
+          echo "Deploying to Server 2"
+          hostname
