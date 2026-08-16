@@ -13,6 +13,6 @@
   #             dnf install mariadb105-server -y
   #             EOF
   tags = {
-    Name = "backend-public"
+    Name = "backend-private"
   }
   }

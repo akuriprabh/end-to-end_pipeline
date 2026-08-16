@@ -24,11 +24,12 @@ vpc_id            = module.vpc.vpc_id
 
 resource "aws_key_pair" "login" {
   key_name   = "us-east-1"
-  public_key = var.ec2_public_key
+  #public_key = var.ec2_public_key  # for github actions 
+  public_key = file("~/.ssh/us-east-1.pub")
 }
 
 # ────────────────────────────
-# frontend ec2 instance public
+# frontend ec2 instance private
 # ─────────────────────────────
 module "frontend-ec2" {
 source = "../../modules/frontend/ec2"
@@ -37,13 +38,14 @@ ami = "ami-00ca32bbc84273381"
 instance_type = "t2.micro"
 #key_name = "us-east-1"
 key_name = aws_key_pair.login.key_name
-subnet_id = module.vpc.public_subnets[0]
+#subnet_id = module.vpc.public_subnets[0]
+subnet_id = module.vpc.private_web_subnets[0]
 security_group_id = module.vpc.bastion_sg_id
 
 }
 
 # ────────────────────────────
-# backend ec2 instance public
+# backend ec2 instance private
 # ─────────────────────────────
 module "backend-ec2" {
 source = "../../modules/backend/ec2"
@@ -52,7 +54,8 @@ ami = "ami-00ca32bbc84273381"
 instance_type = "t2.micro"
 #key_name = "us-east-1"
 key_name = aws_key_pair.login.key_name
-subnet_id = module.vpc.public_subnets[0]
+#subnet_id = module.vpc.public_subnets[0]
+subnet_id = module.vpc.private_app_subnets[0]
 security_group_id = module.vpc.bastion_sg_id
 
 }

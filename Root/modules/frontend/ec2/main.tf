@@ -14,7 +14,7 @@ resource "aws_instance" "frontend" {
   #             yum install git -y
   #             EOF
   tags = {
-    Name = "frontend-public"
+    Name = "frontend-private"
   }
 
   }
