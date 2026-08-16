@@ -24,8 +24,8 @@ vpc_id            = module.vpc.vpc_id
 
 resource "aws_key_pair" "login" {
   key_name   = "us-east-1"
-  #public_key = var.ec2_public_key  # for github actions 
-  public_key = file("~/.ssh/us-east-1.pub")
+  public_key = var.ec2_public_key      # for github actions 
+  #public_key = file("~/.ssh/us-east-1.pub")     # for local 
 }
 
 # ────────────────────────────
